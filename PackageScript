@@ -1,22 +1,18 @@
 # vim: set ts=8 sts=2 sw=2 tw=99 et ft=python:
 import os
 
-# This is where the files will be output to
-# package is the default
 builder.SetBuildFolder('package')
 
-# Add any folders you need to this list
 folder_list = [
   'addons/sourcemod/extensions',
   'addons/sourcemod/scripting/include',
   'addons/sourcemod/gamedata',
-  #'addons/sourcemod/configs',
 ]
 
-for cxx_task in Extension.extensions:
-  if cxx_task.target.arch == 'x86_64':
-    folder_list.append('addons/sourcemod/extensions/x64')
-    break
+if 'x86_64' in Extension.target_archs:
+  folder_list.extend([
+    'addons/sourcemod/extensions/x64',
+  ])
 
 # Create the distribution folder hierarchy.
 folder_map = {}
@@ -33,22 +29,13 @@ def CopyFiles(src, dest, files):
     source_path = os.path.join(builder.sourcePath, src, source_file)
     builder.AddCopy(source_path, dest_entry)
 
-# Include files 
 CopyFiles('', 'addons/sourcemod/scripting/include',
   [ 'sourcetvmanager.inc', ]
 )
 
-# GameData files
 CopyFiles('', 'addons/sourcemod/gamedata',
-  [ 'sourcetvmanager.games.txt' ]
+  [ 'sourcetvmanager.games.txt', ]
 )
-
-# Config Files
-#CopyFiles('configs', 'addons/sourcemod/configs',
-#  [ 'configfile.cfg',
-#  'otherconfig.cfg,
-#  ]
-#)
 
 # Copy binaries.
 for cxx_task in Extension.extensions:
